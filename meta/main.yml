@@ -1,0 +1,17 @@
+---
+galaxy_info:
+  author: Adam
+  description: Librewolf - Custom version of Firefox, focued on privacy, security and freedom
+  license: MIT
+  company: none
+  min_ansible_version: 2.7
+  platforms:
+    - name: Debian
+      versions:
+        - bullseye
+  galaxy_tags:
+    - librewolf
+    - browser
+    - desktop
+
+dependencies: []

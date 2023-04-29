@@ -1,0 +1,33 @@
+- name: "Pulling list of packages that are already installed"
+  ansible.builtin.package_facts:
+    manager: "auto"
+
+- name: Download repo signing key
+  ansible.builtin.get_url:
+    checksum: sha256:4f438df8a84241e921edd26f164d1926e200ec3e36b1b330285242777ea3c693
+    url: https://deb.librewolf.net/keyring.gpg
+    dest: /usr/share/keyrings/librewolf.gpg
+    mode: '644'
+  when: "'librewolf' not in ansible_facts.packages and ansible_os_family == 'Debian'"
+
+- name: Add repo to list of sources
+  ansible.builtin.copy:
+    content: |
+      Types: deb
+      URIs: https://deb.librewolf.net
+      Suites: {{ansible_lsb.codename}}
+      Components: main
+      Architectures: amd64
+      Signed-By: /usr/share/keyrings/librewolf.gpg
+    dest: /etc/apt/sources.list.d/librewolf.sources
+    mode: '644'
+  when: "'librewolf' not in ansible_facts.packages and ansible_os_family == 'Debian'"
+
+- name: Make sure we have the latest metadata for apt
+  ansible.builtin.apt:
+    update_cache: True
+  when: ansible_os_family == "Debian"
+
+- name: Install the package
+  ansible.builtin.package:
+    name: librewolf
